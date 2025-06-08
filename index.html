@@ -249,20 +249,30 @@
     }
 
     function usarUbicacionActual() {
-      if (!navigator.geolocation) {
-        alert('Tu navegador no soporta geolocalización.');
-        return;
-      }
-      navigator.geolocation.getCurrentPosition(pos => {
-        const lat = pos.coords.latitude;
-        const lng = pos.coords.longitude;
-        const coords = `${lat},${lng}`;
-        document.getElementById('direccion').value = coords;
-        mostrarMapaDesdeDireccion(coords);
-      }, err => {
-        alert('No se pudo obtener tu ubicación.');
-      });
+  if (!navigator.geolocation) {
+    alert('Tu navegador no soporta geolocalización.');
+    return;
+  }
+  navigator.geolocation.getCurrentPosition(async pos => {
+    const lat = pos.coords.latitude;
+    const lng = pos.coords.longitude;
+    const coords = `${lat},${lng}`;
+
+    try {
+      const response = await fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lng}`);
+      const data = await response.json();
+      const direccionLegible = data.display_name || coords;
+      document.getElementById('direccion').value = direccionLegible;
+      mostrarMapaDesdeDireccion(direccionLegible);
+    } catch (e) {
+      document.getElementById('direccion').value = coords;
+      mostrarMapaDesdeDireccion(coords);
     }
+  }, err => {
+    alert('No se pudo obtener tu ubicación.');
+  });
+}
+
 
     function mostrarMapaDesdeDireccion(direccion) {
       map.src = `https://maps.google.com/maps?q=${encodeURIComponent(direccion)}&z=15&output=embed`;
