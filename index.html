@@ -447,7 +447,15 @@ document.addEventListener('DOMContentLoaded', () => {
   renderCalendarioCitas();
 });
 
-  const { jsPDF } = window.jspdf;
+ const { jsPDF } = window.jspdf;
+
+  // Obtener y actualizar número de recibo desde localStorage
+  function obtenerNumeroRecibo() {
+    let numero = localStorage.getItem('numeroRecibo') || '000501';
+    let siguiente = (parseInt(numero) + 1).toString().padStart(6, '0');
+    localStorage.setItem('numeroRecibo', siguiente);
+    return siguiente;
+  }
 
   document.getElementById('reciboForm').addEventListener('submit', function (e) {
     e.preventDefault();
@@ -459,12 +467,13 @@ document.addEventListener('DOMContentLoaded', () => {
     const hora = document.getElementById('horaRecibo').value;
     const monto = document.getElementById('montoRecibo').value;
     const senia = document.getElementById('seniaRecibo').value;
+    const numeroRecibo = obtenerNumeroRecibo();
 
     const pdf = new jsPDF();
     const pageWidth = pdf.internal.pageSize.getWidth();
     const pageHeight = pdf.internal.pageSize.getHeight();
 
-    // Marca de agua repetida en toda la hoja
+    // Marca de agua repetida
     pdf.setTextColor(240);
     pdf.setFontSize(40);
     for (let y = 0; y < pageHeight; y += 60) {
@@ -473,39 +482,46 @@ document.addEventListener('DOMContentLoaded', () => {
       }
     }
 
-    // Encabezado con datos de empresa
+    // Encabezado
     pdf.setTextColor(0);
     pdf.setFontSize(18);
     pdf.text("RECIBO DE SERVICIO", pageWidth / 2, 20, { align: "center" });
-
     pdf.setFontSize(11);
     pdf.text("Emitido por: Software Chain", 15, 30);
     pdf.text("CUIT: 23-3098854449-9", 15, 36);
     pdf.text("Domicilio: Belgrano 965, Godoy Cruz, Mendoza", 15, 42);
     pdf.text("Slogan: Tecnología que te simplifica", 15, 48);
+    pdf.text(`N.º Recibo: ${numeroRecibo}`, 160, 30);
 
-    // Información del recibo
+    // Cuerpo del recibo
     pdf.setFontSize(12);
     let y = 60;
-    pdf.text(`📅 Fecha: ${fecha}`, 15, y);
-    pdf.text(`🕐 Hora: ${hora}`, 100, y);
+    pdf.setFont("helvetica", "bold");
+    pdf.text(`[FECHA]`, 15, y); pdf.setFont("helvetica", "normal"); pdf.text(` ${fecha}`, 45, y);
+    pdf.setFont("helvetica", "bold");
+    pdf.text(`[HORA]`, 100, y); pdf.setFont("helvetica", "normal"); pdf.text(` ${hora}`, 130, y);
     y += 10;
-    pdf.text(`👤 Cliente: ${cliente}`, 15, y);
+    pdf.setFont("helvetica", "bold");
+    pdf.text(`[CLIENTE]`, 15, y); pdf.setFont("helvetica", "normal"); pdf.text(` ${cliente}`, 50, y);
     y += 10;
-    pdf.text(`🔧 Detalle: ${detalle}`, 15, y);
+    pdf.setFont("helvetica", "bold");
+    pdf.text(`[DETALLE]`, 15, y); pdf.setFont("helvetica", "normal"); pdf.text(` ${detalle}`, 50, y);
     y += 10;
-    pdf.text(`✅ Garantía: ${garantia} (12 meses incluye hasta 5 actualizaciones sin cargo)`, 15, y);
+    pdf.setFont("helvetica", "bold");
+    pdf.text(`[GARANTÍA]`, 15, y); pdf.setFont("helvetica", "normal"); pdf.text(` ${garantia} (12 meses incluye hasta 5 actualizaciones sin cargo)`, 50, y);
     y += 10;
-    pdf.text(`💰 Monto total: $${monto}`, 15, y);
+    pdf.setFont("helvetica", "bold");
+    pdf.text(`[MONTO TOTAL]`, 15, y); pdf.setFont("helvetica", "normal"); pdf.text(` $${monto}`, 60, y);
     y += 10;
-    pdf.text(`💵 Seña recibida: $${senia}`, 15, y);
+    pdf.setFont("helvetica", "bold");
+    pdf.text(`[SEÑA RECIBIDA]`, 15, y); pdf.setFont("helvetica", "normal"); pdf.text(` $${senia}`, 65, y);
 
-    // Firma cliente
+    // Firma del cliente
     y += 30;
     pdf.line(140, y, 190, y);
     pdf.text("Firma del cliente", 150, y + 5);
 
-    // Firma digital empresa
+    // Firma digital
     y += 20;
     pdf.setDrawColor(63, 128, 255);
     pdf.setFontSize(10);
@@ -513,8 +529,8 @@ document.addEventListener('DOMContentLoaded', () => {
     pdf.text("Software Chain - Firmado digitalmente", 15, y);
     pdf.text("Emitido automáticamente por sistema interno", 15, y + 6);
 
-    // Guardar PDF
-    pdf.save(`Recibo_${cliente}_${fecha}.pdf`);
+    // Guardar
+    pdf.save(`Recibo_${numeroRecibo}_${cliente}_${fecha}.pdf`);
   });
 
     function mostrarMapaDesdeDireccion(direccion) {
