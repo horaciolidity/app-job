@@ -447,7 +447,7 @@ document.addEventListener('DOMContentLoaded', () => {
   renderCalendarioCitas();
 });
 
-   const { jsPDF } = window.jspdf;
+  const { jsPDF } = window.jspdf;
 
   document.getElementById('reciboForm').addEventListener('submit', function (e) {
     e.preventDefault();
@@ -461,60 +461,57 @@ document.addEventListener('DOMContentLoaded', () => {
     const senia = document.getElementById('seniaRecibo').value;
 
     const pdf = new jsPDF();
+    const pageWidth = pdf.internal.pageSize.getWidth();
+    const pageHeight = pdf.internal.pageSize.getHeight();
 
-    // Marca de agua
-    pdf.setTextColor(200);
-    pdf.setFontSize(50);
-    pdf.text("Software Chain", 35, 160, { angle: 45 });
+    // Marca de agua repetida en toda la hoja
+    pdf.setTextColor(240);
+    pdf.setFontSize(40);
+    for (let y = 0; y < pageHeight; y += 60) {
+      for (let x = 0; x < pageWidth; x += 80) {
+        pdf.text("Software Chain", x, y, { angle: 45 });
+      }
+    }
 
-    pdf.setTextColor(40);
-    pdf.setFontSize(14);
-    pdf.setDrawColor(63, 128, 255); // Borde azul suave
-    pdf.setFillColor(230, 240, 255); // Fondo suave
-    pdf.rect(10, 10, 190, 277, 'S');
-
-    pdf.setFontSize(18);
+    // Encabezado con datos de empresa
     pdf.setTextColor(0);
-    pdf.text("RECIBO DE SERVICIO", 105, 25, { align: "center" });
-    pdf.setFontSize(12);
-    pdf.text("Emitido por: Software Chain", 15, 35);
-    pdf.text("Domicilio: Belgrano 965, Godoy Cruz, Mendoza", 15, 42);
-    pdf.text("Slogan: Tecnología que te simplifica", 15, 49);
+    pdf.setFontSize(18);
+    pdf.text("RECIBO DE SERVICIO", pageWidth / 2, 20, { align: "center" });
 
-    // Cuadro con campos del recibo
-    pdf.setFillColor(245, 245, 255);
-    pdf.setDrawColor(100, 100, 200);
     pdf.setFontSize(11);
+    pdf.text("Emitido por: Software Chain", 15, 30);
+    pdf.text("CUIT: 23-3098854449-9", 15, 36);
+    pdf.text("Domicilio: Belgrano 965, Godoy Cruz, Mendoza", 15, 42);
+    pdf.text("Slogan: Tecnología que te simplifica", 15, 48);
 
-    const data = [
-      ["Cliente", cliente],
-      ["Fecha", fecha],
-      ["Hora", hora],
-      ["Detalle de instalación", detalle],
-      ["Garantía", garantia],
-      ["Monto total ($)", `$${monto}`],
-      ["Seña recibida ($)", `$${senia}`]
-    ];
+    // Información del recibo
+    pdf.setFontSize(12);
+    let y = 60;
+    pdf.text(`📅 Fecha: ${fecha}`, 15, y);
+    pdf.text(`🕐 Hora: ${hora}`, 100, y);
+    y += 10;
+    pdf.text(`👤 Cliente: ${cliente}`, 15, y);
+    y += 10;
+    pdf.text(`🔧 Detalle: ${detalle}`, 15, y);
+    y += 10;
+    pdf.text(`✅ Garantía: ${garantia} (12 meses incluye hasta 5 actualizaciones sin cargo)`, 15, y);
+    y += 10;
+    pdf.text(`💰 Monto total: $${monto}`, 15, y);
+    y += 10;
+    pdf.text(`💵 Seña recibida: $${senia}`, 15, y);
 
-    let startY = 60;
-    data.forEach(row => {
-      pdf.setFillColor(230, 230, 255);
-      pdf.rect(15, startY, 60, 10, 'F');
-      pdf.setTextColor(40);
-      pdf.text(row[0], 17, startY + 7);
+    // Firma cliente
+    y += 30;
+    pdf.line(140, y, 190, y);
+    pdf.text("Firma del cliente", 150, y + 5);
 
-      pdf.setFillColor(255, 255, 255);
-      pdf.rect(75, startY, 120, 10, 'F');
-      pdf.setTextColor(0);
-      pdf.text(row[1], 77, startY + 7);
-
-      startY += 12;
-    });
-
-    // Firma
-    pdf.setDrawColor(150);
-    pdf.line(140, 240, 190, 240);
-    pdf.text("Firma del cliente", 150, 245);
+    // Firma digital empresa
+    y += 20;
+    pdf.setDrawColor(63, 128, 255);
+    pdf.setFontSize(10);
+    pdf.setTextColor(63, 128, 255);
+    pdf.text("Software Chain - Firmado digitalmente", 15, y);
+    pdf.text("Emitido automáticamente por sistema interno", 15, y + 6);
 
     // Guardar PDF
     pdf.save(`Recibo_${cliente}_${fecha}.pdf`);
