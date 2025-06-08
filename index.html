@@ -6,45 +6,152 @@
   <title>Gestor de Preventas de Software</title>
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" />
   <style>
+  body {
+    background-color: #1c1e22;
+    color: #f1f1f1;
+    font-size: 16px;
+    margin: 0;
+    padding: 0;
+    font-family: system-ui, sans-serif;
+  }
+
+  .container {
+    padding: 1rem;
+  }
+
+  .card {
+    background-color: #2a2d33;
+    border: none;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+    margin-bottom: 1.5rem;
+  }
+
+  .card-header {
+    background-color: #2a2d33;
+    border-bottom: 1px solid #444;
+    font-weight: bold;
+    color: #f1f1f1;
+    padding: 0.75rem 1rem;
+  }
+
+  .card-body {
+    padding: 1.5rem;
+  }
+
+  .form-control,
+  .form-select,
+  textarea {
+    background-color: #333;
+    color: #f1f1f1;
+    border: 1px solid #555;
+  }
+
+  .form-control::placeholder,
+  textarea::placeholder {
+    color: #bbb;
+  }
+
+  button,
+  .btn {
+    font-size: 0.95rem;
+    padding: 10px 16px;
+    border-radius: 6px;
+  }
+
+  .btn-success {
+    background-color: #28a745;
+    border: none;
+  }
+
+  .btn-warning {
+    background-color: #ffc107;
+    border: none;
+    color: #000;
+  }
+
+  .btn-danger {
+    background-color: #dc3545;
+    border: none;
+  }
+
+  .calendar-placeholder {
+    border: 2px dashed #555;
+    padding: 3rem;
+    text-align: center;
+    color: #888;
+  }
+
+  iframe {
+    width: 100%;
+    height: 300px;
+    border: none;
+    margin-top: 10px;
+  }
+
+  .btn-map,
+  #navLink {
+    margin-top: 10px;
+    text-align: center;
+    width: 100%;
+  }
+
+  .card-title,
+  .card-text,
+  .text-muted {
+    color: #f1f1f1 !important;
+  }
+
+  @media (max-width: 400px) {
     body {
-      background-color: #1c1e22;
-      color: #f1f1f1;
+      font-size: 14px;
+      padding: 0 10px;
     }
-    .card {
-      background-color: #2a2d33;
-      border: none;
-      box-shadow: 0 4px 6px rgba(0,0,0,0.3);
-    }
-    .form-control, .form-select, textarea {
-      background-color: #333;
-      color: #f1f1f1;
-      border: 1px solid #555;
-    }
-    .form-control::placeholder, textarea::placeholder {
-      color: #bbb;
-    }
-    .btn-success {
-      background-color: #28a745;
-      border: none;
-    }
-    .calendar-placeholder {
-      border: 2px dashed #555;
-      padding: 3rem;
+
+    h1 {
+      font-size: 1.3rem;
       text-align: center;
-      color: #888;
     }
-    iframe {
+
+    .container {
+      padding: 0.5rem;
+    }
+
+    .card-body,
+    .card-header {
+      padding: 1rem;
+    }
+
+    .form-control,
+    .form-select,
+    textarea {
+      font-size: 0.9rem;
+    }
+
+    .btn,
+    button {
+      font-size: 0.85rem;
+      padding: 8px 12px;
+    }
+
+    .btn-map,
+    #navLink {
       width: 100%;
-      height: 300px;
-      border: none;
-      margin-top: 10px;
+      display: block;
+      margin-top: 8px;
     }
-    .btn-map {
-      margin-top: 10px;
+
+    .card-title {
+      font-size: 1rem;
     }
-    .card-title, .card-text, .text-muted {
-      color: #f1f1f1 !important;
+
+    .card-text {
+      font-size: 0.9rem;
     }
+
+    iframe {
+      height: 250px;
+    }
+  }
   </style>
 </head>
 <body>
