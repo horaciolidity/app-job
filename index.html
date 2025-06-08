@@ -274,7 +274,7 @@
           <input type="number" class="form-control" id="seniaRecibo" placeholder="Seña recibida ($)" required>
         </div>
         <div class="col-12 text-end">
-          <button type="submit" class="btn btn-success">📄 Generar y Compartir PDF</button>
+          <button type="submit" class="btn btn-success">📄 Generar y Descargar PDF</button>
         </div>
       </div>
     </form>
@@ -447,10 +447,9 @@ document.addEventListener('DOMContentLoaded', () => {
   renderCalendarioCitas();
 });
 
+ const { jsPDF } = window.jspdf;
 
-     const { jsPDF } = window.jspdf;
-
-  document.getElementById('reciboForm').addEventListener('submit', async function (e) {
+  document.getElementById('reciboForm').addEventListener('submit', function (e) {
     e.preventDefault();
 
     const cliente = document.getElementById('clienteRecibo').value;
@@ -480,14 +479,7 @@ document.addEventListener('DOMContentLoaded', () => {
     pdf.text("__________________________", 140, 120);
     pdf.text("Firma del cliente", 155, 125);
 
-    const blob = pdf.output("blob");
-    const file = new File([blob], `Recibo_${cliente}_${fecha}.pdf`, { type: 'application/pdf' });
-    const fileURL = URL.createObjectURL(file);
-
-    const mensaje = `Hola ${cliente}, te comparto el recibo generado por Software Chain.`;
-    const whatsappURL = `https://wa.me/?text=${encodeURIComponent(mensaje + '\n' + fileURL)}`;
-
-    window.open(whatsappURL, '_blank');
+    pdf.save(`Recibo_${cliente}_${fecha}.pdf`);
   });
 
     function mostrarMapaDesdeDireccion(direccion) {
