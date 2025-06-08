@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Gestor de Preventas de Software</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" />
+  <style>
+    body {
+      background-color: #f4f6f9;
+    }
+    .card {
+      box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+    }
+    .calendar-placeholder {
+      border: 2px dashed #ccc;
+      padding: 3rem;
+      text-align: center;
+      color: #999;
+    }
+  </style>
+</head>
+<body>
+  <div class="container py-4">
+    <h1 class="mb-4 text-center">📋 Gestor de Preventas de Software</h1>
+
+    <!-- Formulario -->
+    <div class="card mb-4">
+      <div class="card-header">Agregar nuevo prospecto</div>
+      <div class="card-body">
+        <form id="clientForm">
+          <div class="row g-3">
+            <div class="col-md-6">
+              <input type="text" id="empresa" class="form-control" placeholder="Nombre de empresa" required />
+            </div>
+            <div class="col-md-6">
+              <input type="text" id="contacto" class="form-control" placeholder="Nombre del contacto" required />
+            </div>
+            <div class="col-md-4">
+              <input type="tel" id="telefono" class="form-control" placeholder="Teléfono" />
+            </div>
+            <div class="col-md-4">
+              <input type="text" id="whatsapp" class="form-control" placeholder="WhatsApp" />
+            </div>
+            <div class="col-md-4">
+              <input type="email" id="email" class="form-control" placeholder="Email" />
+            </div>
+            <div class="col-md-6">
+              <input type="text" id="direccion" class="form-control" placeholder="Dirección / Zona" />
+            </div>
+            <div class="col-md-6">
+              <select id="tipoEmpresa" class="form-select">
+                <option selected disabled>Tipo de empresa</option>
+                <option value="Comercio">Comercio</option>
+                <option value="Fábrica">Fábrica</option>
+                <option value="Profesional">Profesional</option>
+              </select>
+            </div>
+            <div class="col-md-6">
+              <select id="tipoSoftware" class="form-select">
+                <option selected disabled>Tipo de software</option>
+                <option value="CRM">CRM</option>
+                <option value="Facturación">Facturación</option>
+                <option value="Stock">Gestión de Stock</option>
+                <option value="Otro">Otro</option>
+              </select>
+            </div>
+            <div class="col-md-3">
+              <input type="date" id="fechaCita" class="form-control" />
+            </div>
+            <div class="col-md-3">
+              <select id="medioContacto" class="form-select">
+                <option selected disabled>Origen del contacto</option>
+                <option value="Facebook">Facebook</option>
+                <option value="Instagram">Instagram</option>
+                <option value="Referido">Referido</option>
+                <option value="Otro">Otro</option>
+              </select>
+            </div>
+            <div class="col-12">
+              <textarea id="observaciones" class="form-control" rows="2" placeholder="Observaciones"></textarea>
+            </div>
+            <div class="col-12 text-end">
+              <button type="submit" class="btn btn-success">Guardar prospecto</button>
+            </div>
+          </div>
+        </form>
+      </div>
+    </div>
+
+    <!-- Lista de prospectos -->
+    <div class="card mb-4">
+      <div class="card-header">📒 Lista de prospectos</div>
+      <div class="card-body">
+        <div id="listaProspectos" class="row g-3"></div>
+      </div>
+    </div>
+
+    <!-- Calendario (placeholder visual) -->
+    <div class="card">
+      <div class="card-header">📅 Citas agendadas</div>
+      <div class="card-body calendar-placeholder">
+        (Aquí se integraría un calendario visual si se desea en una siguiente etapa)
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const form = document.getElementById('clientForm');
+    const lista = document.getElementById('listaProspectos');
+
+    const getProspectos = () => JSON.parse(localStorage.getItem('prospectos')) || [];
+    const saveProspectos = (data) => localStorage.setItem('prospectos', JSON.stringify(data));
+
+    const renderLista = () => {
+      const prospectos = getProspectos();
+      lista.innerHTML = '';
+      if (!prospectos.length) {
+        lista.innerHTML = '<p class="text-muted">No hay prospectos cargados aún.</p>';
+        return;
+      }
+      prospectos.forEach((p, index) => {
+        const card = document.createElement('div');
+        card.className = 'col-md-6';
+        card.innerHTML = `
+          <div class="card">
+            <div class="card-body">
+              <h5 class="card-title">${p.empresa} - ${p.contacto}</h5>
+              <p class="card-text">
+                📞 ${p.telefono || 'Sin teléfono'}<br/>
+                💬 WhatsApp: ${p.whatsapp || '-'}<br/>
+                📧 ${p.email || '-'}<br/>
+                📍 ${p.direccion || '-'}<br/>
+                🏢 ${p.tipoEmpresa || '-'} | 🖥️ ${p.tipoSoftware || '-'}<br/>
+                📆 Cita: ${p.fechaCita || 'No agendada'}<br/>
+                🔗 Contacto por: ${p.medioContacto || '-'}
+              </p>
+              <small class="text-muted">📝 ${p.observaciones || 'Sin observaciones'}</small>
+            </div>
+          </div>
+        `;
+        lista.appendChild(card);
+      });
+    };
+
+    form.addEventListener('submit', (e) => {
+      e.preventDefault();
+      const prospecto = {
+        empresa: document.getElementById('empresa').value,
+        contacto: document.getElementById('contacto').value,
+        telefono: document.getElementById('telefono').value,
+        whatsapp: document.getElementById('whatsapp').value,
+        email: document.getElementById('email').value,
+        direccion: document.getElementById('direccion').value,
+        tipoEmpresa: document.getElementById('tipoEmpresa').value,
+        tipoSoftware: document.getElementById('tipoSoftware').value,
+        fechaCita: document.getElementById('fechaCita').value,
+        medioContacto: document.getElementById('medioContacto').value,
+        observaciones: document.getElementById('observaciones').value
+      };
+
+      const lista = getProspectos();
+      lista.push(prospecto);
+      saveProspectos(lista);
+      form.reset();
+      renderLista();
+    });
+
+    document.addEventListener('DOMContentLoaded', renderLista);
+  </script>
+</body>
+</html>
