@@ -235,12 +235,12 @@
     </div>
 
     <!-- Calendario (placeholder visual) -->
-    <div class="card">
-      <div class="card-header">📅 Citas agendadas</div>
-      <div class="card-body calendar-placeholder">
-        (Aquí se integraría un calendario visual si se desea en una siguiente etapa)
-      </div>
-    </div>
+   <div class="card">
+  <div class="card-header">📅 Citas agendadas</div>
+  <div class="card-body" id="calendarCitas">
+    <ul class="list-group" id="listaCitas"></ul>
+  </div>
+</div>
   </div>
 
   <script>
@@ -379,7 +379,34 @@
     alert('No se pudo obtener tu ubicación.');
   });
 }
+function renderCalendarioCitas() {
+  const citas = getProspectos();
+  const ul = document.getElementById('listaCitas');
+  ul.innerHTML = '';
+  const ordenadas = citas
+    .filter(p => p.fechaCita)
+    .sort((a, b) => a.fechaCita.localeCompare(b.fechaCita));
 
+  if (!ordenadas.length) {
+    ul.innerHTML = '<li class="list-group-item text-muted bg-dark">No hay citas programadas.</li>';
+    return;
+  }
+
+  ordenadas.forEach(p => {
+    const li = document.createElement('li');
+    li.className = 'list-group-item bg-dark text-light';
+    li.innerHTML = `
+      <strong>${p.fechaCita}</strong> → ${p.empresa} (${p.contacto})<br>
+      <small class="text-muted">${p.tipoSoftware || ''}</small>
+    `;
+    ul.appendChild(li);
+  });
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+  renderLista();
+  renderCalendarioCitas();
+});
 
     function mostrarMapaDesdeDireccion(direccion) {
       map.src = `https://maps.google.com/maps?q=${encodeURIComponent(direccion)}&z=15&output=embed`;
