@@ -74,7 +74,8 @@
               <input type="email" id="email" class="form-control" placeholder="Email" />
             </div>
             <div class="col-md-6">
-              <input type="text" id="direccion" class="form-control" placeholder="Dirección / Zona" onchange="geolocalizar()" />
+              <input type="text" id="direccion" class="form-control mb-2" placeholder="Dirección / Zona" onchange="geolocalizar()" />
+              <button type="button" class="btn btn-outline-info btn-sm mb-2" onclick="usarUbicacionActual()">📍 Usar ubicación actual</button>
               <iframe id="map" src="" style="display: none;"></iframe>
               <a id="navLink" href="#" target="_blank" class="btn btn-outline-light btn-sm btn-map" style="display: none;">🧭 Ir a la ubicación</a>
             </div>
@@ -244,21 +245,23 @@
     function geolocalizar() {
       const direccion = document.getElementById('direccion').value;
       if (!direccion) return;
+      mostrarMapaDesdeDireccion(direccion);
+    }
 
-      if (navigator.geolocation) {
-        navigator.geolocation.getCurrentPosition(pos => {
-          const lat = pos.coords.latitude;
-          const lng = pos.coords.longitude;
-          map.src = `https://maps.google.com/maps?q=${lat},${lng}&z=15&output=embed`;
-          map.style.display = 'block';
-          navLink.href = `https://www.google.com/maps/dir/?api=1&destination=${lat},${lng}`;
-          navLink.style.display = 'inline-block';
-        }, () => {
-          mostrarMapaDesdeDireccion(direccion);
-        });
-      } else {
-        mostrarMapaDesdeDireccion(direccion);
+    function usarUbicacionActual() {
+      if (!navigator.geolocation) {
+        alert('Tu navegador no soporta geolocalización.');
+        return;
       }
+      navigator.geolocation.getCurrentPosition(pos => {
+        const lat = pos.coords.latitude;
+        const lng = pos.coords.longitude;
+        const coords = `${lat},${lng}`;
+        document.getElementById('direccion').value = coords;
+        mostrarMapaDesdeDireccion(coords);
+      }, err => {
+        alert('No se pudo obtener tu ubicación.');
+      });
     }
 
     function mostrarMapaDesdeDireccion(direccion) {
